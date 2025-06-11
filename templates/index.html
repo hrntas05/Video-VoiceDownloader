@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎬 Video İndirici</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            width: 100%;
+            max-width: 600px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            color: #2563eb;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #6b7280;
+            font-size: 1.1rem;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #2563eb;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .options-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .download-btn {
+            background: linear-gradient(45deg, #2563eb, #3b82f6);
+            color: white;
+            border: none;
+            padding: 16px 32px;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+        }
+
+        .download-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(37, 99, 235, 0.3);
+        }
+
+        .download-btn:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .progress-container {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f9fafb;
+            border-radius: 10px;
+            display: none;
+        }
+
+        .progress-container.active {
+            display: block;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e5e7eb;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(45deg, #10b981, #34d399);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .status-text {
+            text-align: center;
+            font-weight: 500;
+            color: #374151;
+        }
+
+        .error-message {
+            background: #fef2f2;
+            color: #dc2626;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            border: 1px solid #fecaca;
+        }
+
+        .success-message {
+            background: #f0fdf4;
+            color: #166534;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            border: 1px solid #bbf7d0;
+        }
+
+        .path-input-container {
+            display: flex;
+            gap: 10px;
+        }
+
+        .path-input-container input {
+            flex: 1;
+        }
+
+        .browse-btn {
+            background: #6b7280;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 14px;
+            white-space: nowrap;
+        }
+
+        .browse-btn:hover {
+            background: #4b5563;
+        }
+
+        @media (max-width: 640px) {
+            .options-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .container {
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎬 Video İndirici</h1>
+            <p>YouTube, Instagram, TikTok ve birçok platformdan video indirin</p>
+        </div>
+
+        <form id="downloadForm">
+            <div class="form-group">
+                <label for="url">Video URL'si</label>
+                <textarea 
+                    id="url" 
+                    placeholder="YouTube, Instagram, TikTok veya diğer video linkini buraya yapıştır..."
+                    rows="3"
+                ></textarea>
+            </div>
+
+            <div class="options-row">
+                <div class="form-group">
+                    <label for="quality">Video Kalitesi</label>
+                    <select id="quality">
+                        <option value="best">En İyi Kalite</option>
+                        <option value="1080p">1080p (Full HD)</option>
+                        <option value="720p">720p (HD)</option>
+                        <option value="480p">480p</option>
+                        <option value="360p">360p</option>
+                        <option value="worst">En Düşük Kalite</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="format">Format</label>
+                    <select id="format">
+                        <option value="mp4">MP4 (Video)</option>
+                        <option value="webm">WebM (Video)</option>
+                        <option value="mkv">MKV (Video)</option>
+                        <option value="mp3">MP3 (Ses)</option>
+                        <option value="m4a">M4A (Ses)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="path">İndirme Klasörü</label>
+                <div class="path-input-container">
+                    <input 
+                        type="text" 
+                        id="path" 
+                        readonly 
+                        value=""
+                    >
+                    <button type="button" class="browse-btn" onclick="selectFolder()">
+                        Klasör Seç
+                    </button>
+                </div>
+            </div>
+
+            <button type="submit" class="download-btn" id="downloadBtn">
+                📥 İndir
+            </button>
+        </form>
+
+        <div class="progress-container" id="progressContainer">
+            <div class="status-text" id="statusText">Hazırlanıyor...</div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+        </div>
+
+        <div id="messageContainer"></div>
+    </div>
+
+    <script>
+        // Varsayılan indirme klasörü
+        document.getElementById('path').value = getDefaultDownloadPath();
+
+        function getDefaultDownloadPath() {
+            // Tarayıcıda Downloads klasörünü simüle et
+            return 'Downloads';
+        }
+
+        function selectFolder() {
+            // Web ortamında dosya seçici sınırlı, basit bir prompt kullan
+            const path = prompt('İndirme klasörü yolunu girin:', document.getElementById('path').value);
+            if (path) {
+                document.getElementById('path').value = path;
+            }
+        }
+
+        document.getElementById('downloadForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const url = document.getElementById('url').value.trim();
+            const quality = document.getElementById('quality').value;
+            const format = document.getElementById('format').value;
+            const path = document.getElementById('path').value;
+
+            if (!url) {
+                showMessage('Lütfen bir video URL\'si girin!', 'error');
+                return;
+            }
+
+            // UI'ı güncelle
+            const downloadBtn = document.getElementById('downloadBtn');
+            const progressContainer = document.getElementById('progressContainer');
+            
+            downloadBtn.disabled = true;
+            downloadBtn.textContent = 'İndiriliyor...';
+            progressContainer.classList.add('active');
+            clearMessages();
+
+            try {
+                const response = await fetch('/download', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ url, quality, format: format, path })
+                });
+
+                const result = await response.json();
+                
+                if (result.error) {
+                    showMessage(result.error, 'error');
+                    resetUI();
+                } else {
+                    // İlerleme takibini başlat
+                    startProgressTracking();
+                }
+            } catch (error) {
+                showMessage('Bir hata oluştu: ' + error.message, 'error');
+                resetUI();
+            }
+        });
+
+        async function startProgressTracking() {
+            const statusInterval = setInterval(async () => {
+                try {
+                    const response = await fetch('/status');
+                    const status = await response.json();
+                    
+                    updateProgress(status);
+                    
+                    if (status.status === 'finished') {
+                        clearInterval(statusInterval);
+                        showMessage(`✅ Video başarıyla indirildi: ${status.filename}`, 'success');
+                        resetUI();
+                    } else if (status.status === 'error') {
+                        clearInterval(statusInterval);
+                        showMessage(`❌ İndirme hatası: ${status.error}`, 'error');
+                        resetUI();
+                    }
+                } catch (error) {
+                    console.error('Status check error:', error);
+                }
+            }, 1000);
+        }
+
+        function updateProgress(status) {
+            const statusText = document.getElementById('statusText');
+            const progressFill = document.getElementById('progressFill');
+            
+            if (status.status === 'downloading') {
+                statusText.textContent = `İndiriliyor... %${status.progress.toFixed(1)} - ${status.speed}`;
+                progressFill.style.width = status.progress + '%';
+            } else if (status.status === 'starting') {
+                statusText.textContent = 'Başlatılıyor...';
+            }
+        }
+
+        function resetUI() {
+            const downloadBtn = document.getElementById('downloadBtn');
+            const progressContainer = document.getElementById('progressContainer');
+            
+            downloadBtn.disabled = false;
+            downloadBtn.textContent = '📥 İndir';
+            progressContainer.classList.remove('active');
+            
+            // Progress'i sıfırla
+            document.getElementById('progressFill').style.width = '0%';
+        }
+
+        function showMessage(message, type) {
+            const container = document.getElementById('messageContainer');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = type === 'error' ? 'error-message' : 'success-message';
+            messageDiv.textContent = message;
+            container.appendChild(messageDiv);
+            
+            // 5 saniye sonra mesajı kaldır
+            setTimeout(() => {
+                messageDiv.remove();
+            }, 5000);
+        }
+
+        function clearMessages() {
+            document.getElementById('messageContainer').innerHTML = '';
+        }
+    </script>
+</body>
+</html> 
