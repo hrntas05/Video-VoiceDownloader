@@ -55,7 +55,7 @@
 ### 🌐 **Web Uygulaması** *(Önerilen)*
 
 ```bash
-python web_app.py
+py web_app.py
 ```
 
 **✅ Avantajları:**
