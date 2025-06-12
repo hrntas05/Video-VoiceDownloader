@@ -70,10 +70,10 @@ python web_app.py
 </td>
 <td width="50%">
 
-### 🖥️ **Masaüstü Uygulaması**
+### 🖥️ **Masaüstü Uygulaması**(web surumu tavsiyemdir)
 
 ```bash
-python main.py
+py main.py
 ```
 
 **⚠️ Notlar:**
@@ -108,9 +108,9 @@ cd video-indirici
 pip install -r requirements.txt
 
 # 3. Uygulamayı başlatın
-python web_app.py    # Web versiyonu (önerilen)
+py web_app.py    # Web versiyonu (önerilen)
 # VEYA
-python main.py       # Masaüstü versiyonu
+py main.py       # Masaüstü versiyonu
 ```
 
 ### 🎉 **İlk Kullanım**
